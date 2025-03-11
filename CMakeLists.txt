@@ -35,7 +35,6 @@ add_library(
 	${PROJECT_NAME}
 	INTERFACE
 	${headers}
-	.clang-format
 )
 
 add_library(
@@ -67,17 +66,6 @@ install(
 install(
 	DIRECTORY include
 	DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-)
-
-configure_file(
-	cmake/config.cmake.in
-	${PROJECT_NAME}Config.cmake
-	@ONLY
-)
-
-install(
-	FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
-	DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
 )
 
 install(
