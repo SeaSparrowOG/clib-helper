@@ -213,6 +213,55 @@ namespace Utilities
 
 			return wasReplaced;
 		}
+
+		/// <summary>
+		/// Given a string, splits it into a pair of integers. The first integer is always present, the second is optional.
+		/// </summary>
+		/// <param name="a_str">The string to parse.</param>
+		/// <param name="a_delimiter">The delimiter to split the string. If more than one are present, only the first instance is used.</param>
+		/// <returns>A pair of ints, where there is always a "first", but the second may not exist.</returns>
+		/// <exception cref="std::out_of_range If a given number is too large or too small to fit in an int."></exception>
+		/// <exception cref="std::invalid_argument If the given string does not contain a number."></exception>
+		template <typename T>
+		inline std::enable_if_t<std::is_integral_v<T>,
+			std::pair<T, std::optional<T>>> SplitIntegers(const std::string& a_str, const std::string& a_delimiter = ",") {
+			auto [min, max] = std::pair<T, std::optional<T>>{ std::numeric_limits<T>::min(), std::nullopt };
+			const auto split = Utilities::String::split(a_str, a_delimiter);
+
+			if (split.empty()) {
+				throw std::invalid_argument("SplitIntegers: Provided string is empty.");
+			}
+
+			bool isHex = Utilities::String::is_only_hex(split[0]);
+			min = Utilities::String::to_num<T>(split[0], isHex);
+			if (split.size() > 1) {
+				isHex = Utilities::String::is_only_hex(split[1]);
+				max = Utilities::String::to_num<T>(split[1], isHex);
+			}
+
+			return { min, max };
+		}
+
+		/// <summary>
+		/// Given a string, splits it in 2 parts using a provided delimiter.
+		/// </summary>
+		/// <param name="a_str">The string to split.</param>
+		/// <param name="a_delimiter">The delimiter to split with.</param>
+		/// <returns>A pair, where the first part is the string to the left of the delimiter, and the second is the string to the right of the delimiter. If the delimiter is not present, second is nullopt.</returns>
+		/// <exception cref="std::invalid_argument">Thrown if the provided string is empty.</exception>
+		inline std::pair<std::string, std::optional<std::string>> SplitStrings(const std::string& a_str, const std::string& a_delimiter = ",") {
+			const auto split = Utilities::String::split(a_str, a_delimiter);
+			if (split.empty()) {
+				throw std::invalid_argument("SplitStrings: Provided string is empty.");
+			}
+
+			auto [min, max] = std::pair<std::string, std::optional<std::string>>{ a_str, std::nullopt };
+			if (split.size() > 1) {
+				min = split[0];
+				max = split[1];
+			}
+			return { min, max };
+		}
 	}
 
 	namespace Forms
