@@ -87,11 +87,12 @@ namespace Utilities
 			public RE::BSTEventSink<E>
 		{
 		public:
-			void RegisterListener() {
+			bool RegisterListener() {
 				auto* eventHolder = RE::ScriptEventSourceHolder::GetSingleton();
-				if (!eventHolder) return;
+				if (!eventHolder) return false;
 
 				eventHolder->AddEventSink(this);
+				return true;
 			}
 		};
 	}
