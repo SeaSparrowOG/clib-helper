@@ -6,13 +6,11 @@ namespace Utilities
 	{
 		using _GetFormEditorID = const char* (*)(std::uint32_t);
 
-		/*
-		* Given a TESForm, it returns the Editor ID. For forms whose ID is not cached,
-		* tries to fetch the ID through PowerOfThree's Tweaks. If this fails, or the form
-		* doesn't have an EditorID it returns an empty string.
-		* @param a_form Pointer to the form to querry. Must NOT be nullptr.
-		* @return The form's EditorID. Empty if the form doesn't have an EditorID or PO3's Tweaks are not installed AND the form's EditorID is not cached.
-		*/
+		/// <summary>
+		/// Gets the form's EditorID. If PO3's Tweaks are present, also returns EditorIDs that are not normally cached.
+		/// </summary>
+		/// <param name="a_form">The form to query.</param>
+		/// <returns>The form's EditorID as a string. An empty string if the EditorID is not found.</returns>
 		inline std::string GetEditorID(const RE::TESForm* a_form)
 		{
 			switch (a_form->GetFormType()) {
@@ -57,7 +55,6 @@ namespace Utilities
 		}
 	}
 
-	// Makes it easier to make a class a Singleton. EventClass is a Singleton that auto registers as an event class.
 	namespace Singleton
 	{
 		template <class T>
@@ -76,8 +73,6 @@ namespace Utilities
 			ISingleton& operator=(ISingleton&&) = delete;
 
 		protected:
-			// Constructor and Destructor are deleted so that ISingleton<T> can NEVER
-			// be instantiated, even by accident, and the methods don't show up in stupidsense.
 			ISingleton() = default;
 			~ISingleton() = default;
 		};
@@ -102,13 +97,12 @@ namespace Utilities
 		// Functions for dealing with strings. Several common operations are covered.
 		// Credit: https://github.com/powerof3/CLibUtil for most of them. 
 
-		/*
-		* Splits a string given a delimiter into parts, and returns them as elements in a vector.
-		* For example, split("Skyrim.esm|0x0", "|") returns ["Skyrim.esm", "0x0"]
-		* @param a_str The string to split.
-		* @param a_delimiter The thing to split on, usually a pipe (|).
-		* @return A vector of strings.
-		*/
+		/// <summary>
+		/// Splits a string given a delimiter into parts, and returns them as elements in a vector.
+		/// </summary>
+		/// <param name="a_str">The string to split.</param>
+		/// <param name="a_delimiter">The string to split based on, usually a pipe (|).</param>
+		/// <returns>A vector of strings. The delimiter is not preserved. For example, split("Skyrim.esm|0x0", "|") returns ["Skyrim.esm", "0x0"].</returns>
 		inline std::vector<std::string> split(const std::string& a_str, const std::string& a_delimiter) {
 			std::vector<std::string> result;
 			size_t start = 0;
@@ -124,12 +118,12 @@ namespace Utilities
 			return result;
 		}
 
-		/*
-		* Tests a given string to see if it is a hex number.
-		* @param a_str The string to test.
-		* @param a_requirePrefix If true, the string to test MUST be prefixed with "0x" to be valid.
-		* @return True if the string is a hexadecimal.
-		*/
+		/// <summary>
+		/// Checks if a given string is a hex number.
+		/// </summary>
+		/// <param name="a_str">The string to check.</param>
+		/// <param name="a_requirePrefix">If true, the number candidate must be prefixed by 0x.</param>
+		/// <returns>True if the number is a hexadecimal number, False otherwise.</returns>
 		inline bool is_only_hex(std::string_view a_str, bool a_requirePrefix = true)
 		{
 			if (!a_requirePrefix) {
@@ -145,15 +139,15 @@ namespace Utilities
 			return false;
 		}
 
-		/*
-		* Given a string, does its best to convert it to a number. 
-		* Given string MUST be convertable to a number, AND must be convertable to the format.
-		* @param a_str The string to convert.
-		* @param a_hex If true, the string is treated as a hexidecimal number (10 = 17 etc).
-		* @return The converted number to <T>.
-		* @throws std::invalid_argument If the input string is not a valid number.
-		* @throws std::out_of_range If the number is outside the range of type T.
-		*/
+		/// <summary>
+		/// Given a string, does its best to convert it to a number.
+		/// </summary>
+		/// <typeparam name="T">The type of number to convert it to.</typeparam>
+		/// <param name="a_str">The string to convert to a number.</param>
+		/// <param name="a_hex">If true, the string is treated as a hexadecimal number.</param>
+		/// <returns>A number of type T.</returns>
+		/// <throws="std::invalid_argument">If the string is not a number.</throws>
+		/// <throws="std::out_of_range">If the string contains a number that is too large to store in T.</throws>
 		template <class T>
 		T to_num(const std::string& a_str, bool a_hex = false)
 		{
@@ -179,11 +173,11 @@ namespace Utilities
 			}
 		}
 
-		/*
-		* Slightly better tolower function. Given a string, converts it to lowercase.
-		* @param a_str The string to convert to lowercase.
-		* @return The string, in lowercase.
-		*/
+		/// <summary>
+		/// Given a string, converts it to lowercase.
+		/// </summary>
+		/// <param name="a_str">The string to convert to lowercase.</param>
+		/// <returns>A new string identical to the original string, but lowercase.</returns>
 		inline std::string tolower(std::string_view a_str)
 		{
 			std::string result(a_str);
@@ -191,13 +185,13 @@ namespace Utilities
 			return result;
 		}
 
-		/*
-		* Given a string, replaces all instances of a given string with another string.
-		* @param a_str The string to perform the search & replace operations on. Modifies the string.
-		* @param a_search The sequence to remove.
-		* @param a_replace The sequence to replace a_search with.
-		* @return True if a replacement has occured.
-		*/
+		/// <summary>
+		/// Given a string, replaces all instances of a given substring in it with something else.
+		/// </summary>
+		/// <param name="a_str">The string to MODIFY. The string is MODIFIED.</param>
+		/// <param name="a_search">The substring to replace.</param>
+		/// <param name="a_replace">The string to replace the substring with.</param>
+		/// <returns>True if replacement happened, False otherwise.</returns>
 		inline bool replace_all(std::string& a_str, std::string_view a_search, std::string_view a_replace)
 		{
 			if (a_search.empty()) {
@@ -267,32 +261,36 @@ namespace Utilities
 
 	namespace Forms
 	{
-		/*
-		* Given a formatted string, attempts to find a form in the game that matches it, casting it to <T*>.
-		* Formatted string format: <Modname>.<Extension>|0x<FormID>
-		* Example: NotTheBees.esp|0x888
-		* @param a_str The formatted string.
-		* @return T pointer to the found form, nullptr if not found.
-		*/
+		/// <summary>
+		/// The standard format I use across all my plugins for parsing strings to get game forms.
+		/// Default format: <Modname>.<Extension>|0x<FormID>
+		/// Also supports searching by EditorID. Not all forms have their EditorIDs cached by the game, but PO3's Tweaks fixes that.
+		/// </summary>
+		/// <typeparam name="T">The type to cast the found form as.</typeparam>
+		/// <param name="a_str">The formatted string.</param>
+		/// <returns>A form of type T*, nullptr if not found.</returns>
 		template <typename T>
 		T* GetFormFromString(const std::string& a_str)
 		{
 			T* response = nullptr;
 			if (const auto splitID = String::split(a_str, "|"); splitID.size() == 2) {
-				if (!String::is_only_hex(splitID[0])) return response;
-				const auto  formID = String::to_num<RE::FormID>(splitID[0], true);
-
-				const auto& modName = splitID[1];
-				if (!RE::TESDataHandler::GetSingleton()->LookupModByName(modName)) return response;
-
-				const auto foundForm = RE::TESDataHandler::GetSingleton()->LookupForm(formID, modName);
-				if (foundForm) {
-					response = skyrim_cast<T*>(foundForm);
+				const auto& modName = splitID[0];
+				if (!RE::TESDataHandler::GetSingleton()->LookupModByName(modName)) {
+					return response;
 				}
-				return response;
+				if (!String::is_only_hex(splitID[1])) {
+					return response;
+				}
+
+				try {
+					const auto  formID = String::to_num<RE::FormID>(splitID[1], true);
+					return RE::TESDataHandler::GetSingleton()->LookupForm<T>(formID, modName);
+				}
+				catch (std::exception& e) {
+					return response;
+				}
 			}
-			response = RE::TESForm::LookupByEditorID<T>(a_str);
-			return response;
+			return RE::TESForm::LookupByEditorID<T>(a_str);
 		}
 	}
 }
