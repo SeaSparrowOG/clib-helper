@@ -284,13 +284,17 @@ namespace Utilities
 
 				try {
 					const auto  formID = String::to_num<RE::FormID>(splitID[1], true);
-					return RE::TESDataHandler::GetSingleton()->LookupForm<T>(formID, modName);
+					auto* intermediate = RE::TESDataHandler::GetSingleton()->LookupForm(formID, modName);
+					if (intermediate) {
+						return skyrim_cast<T*>(intermediate);
+					}
 				}
 				catch (std::exception& e) {
 					return response;
 				}
 			}
-			return RE::TESForm::LookupByEditorID<T>(a_str);
+			auto* intermediate = RE::TESForm::LookupByEditorID(a_str);
+			return intermediate ? skyrim_cast<T*>(intermediate) : nullptr;
 		}
 	}
 }
